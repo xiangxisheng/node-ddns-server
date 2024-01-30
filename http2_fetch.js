@@ -34,16 +34,16 @@ module.exports = async function (_options) {
 		getURLByHost(_host) {
 			return new URL(`https://${_host}`);
 		},
-		http2_connect(sUrl, options_connect) {
+		async http2_connect(sUrl, options_connect) {
 			oPrivate.client = http2.connect(sUrl, options_connect);
-			oPrivate.client.on('error', (e) => {
+			oPrivate.client.on('error', async (e) => {
 				// 处理服务器错误
 				if (e.errno === -4077) {
 					// code: 'ECONNRESET'
-					oPrivate.http2_connect(sUrl, options_connect);
+					await oPrivate.http2_connect(sUrl, options_connect);
 					return;
 				}
-				console.error(e);
+				console.error(new Date(), e);
 			});
 		},
 		async init() {
@@ -71,7 +71,7 @@ module.exports = async function (_options) {
 					return tls.connect(options);
 				}
 			}
-			oPrivate.http2_connect(sUrl, options_connect);
+			await oPrivate.http2_connect(sUrl, options_connect);
 		}
 	};
 	const oPublic = {
@@ -86,7 +86,7 @@ module.exports = async function (_options) {
 			return new Promise((fReqReslove, fReqReject) => {
 				const req = oPrivate.client.request(options);
 				req.on('error', (error) => {
-					console.log('error', error);
+					console.log(new Date(), 'error', error);
 				});
 				req.on('response', (headers) => {
 					const oResResult = {};
@@ -123,6 +123,6 @@ module.exports = async function (_options) {
 			await oPublic.request({ path, data });
 		},
 	}
-	oPrivate.init();
+	await oPrivate.init();
 	return oPublic;
 };

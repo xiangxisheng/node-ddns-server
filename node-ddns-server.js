@@ -28,13 +28,13 @@ async function fGetNameByMacAddr(sMacAddr) {
 async function do_ddns_aaaa(apiDnspod, sMacAddr, sIpv6, isOnline) {
 	// 主机在线状态已改变，因此需要重新解析
 	const sName = await fGetNameByMacAddr(sMacAddr);
-	console.log(sName, sMacAddr, sIpv6, isOnline);
+	console.log(new Date(), sName, sMacAddr, sIpv6, isOnline);
 	if (!sName) {
 		return;
 	}
 	if (isOnline) {
 		await apiDnspod.RecordUpsertTypeValue(process.env.DNSPOD_DOMAIN, `${sName}.v6`, 'AAAA', sIpv6, sMacAddr).catch((ex) => {
-			console.log('[do_ddns_aaaa]', ex);
+			console.log(new Date(), '[do_ddns_aaaa]', ex);
 		});
 	}
 }
@@ -62,7 +62,7 @@ const server = dgram.createSocket('udp6');
 
 // 监听 'message' 事件，当接收到消息时触发
 server.on('message', (msg, rinfo) => {
-	//console.log(`接收到来自 [${rinfo.address}]:${rinfo.port} 的消息: ${msg}`);
+	//console.log(new Date(), `接收到来自 [${rinfo.address}]:${rinfo.port} 的消息: ${msg}`);
 	const sMacAddr = msg.toString().replace(/\-/g, '').toLowerCase();
 	if (!mMacAddr[sMacAddr]) {
 		mMacAddr[sMacAddr] = {};
@@ -78,12 +78,12 @@ server.on('message', (msg, rinfo) => {
 // 监听 'listening' 事件，服务器启动后触发
 server.on('listening', () => {
 	const address = server.address();
-	console.log(`服务器已启动，正在监听 ${address.address}:${address.port}`);
+	console.log(new Date(), `服务器已启动，正在监听 ${address.address}:${address.port}`);
 });
 
 // 监听错误事件
 server.on('error', (err) => {
-	console.error(`服务器发生错误: ${err.stack}`);
+	console.error(new Date(), `服务器发生错误: ${err.stack}`);
 	server.close();
 });
 

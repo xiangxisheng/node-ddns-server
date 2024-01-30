@@ -26,7 +26,7 @@ module.exports = async function (login_token) {
 				oParams.append(name, mParam[name]);
 			}
 			const options = { path, data: oParams.toString() };
-			//console.log('[ApiDnspod.post.options]', options);
+			//console.log(new Date(), '[ApiDnspod.post.options]', options);
 			const res = await oPrivate.clientSession.request(options);
 			const data = await res.json();
 			if (!data.status) {
@@ -76,13 +76,13 @@ module.exports = async function (login_token) {
 			const records = await oPublic.RecordList(domain, sub_domain);
 			if (records) {
 				for (const record of records) {
-					//console.log('记录类型和值都没变', record);
+					//console.log(new Date(), '记录类型和值都没变', record);
 					if (record.type !== record_type || record.value !== value) {
 						const res = await oPublic.RecordDdns(domain, record.id, sub_domain, record_type, value);
-						//console.log('记录类型或值变了，已更新', res);
+						//console.log(new Date(), '记录类型或值变了，已更新', res);
 					}
 					if (record.remark !== remark) {
-						//console.log('正在更新remark', remark);
+						//console.log(new Date(), '正在更新remark', remark);
 						await oPublic.RecordRemark(domain, record.id, remark);
 					}
 				}
@@ -94,7 +94,7 @@ module.exports = async function (login_token) {
 		async RecordInfo(domain, record_id) {
 			const mParam = { domain, record_id };
 			const res = await oPrivate.post('/Record.Info', mParam);
-			console.log(res);
+			console.log(new Date(), res);
 		},
 	};
 	return oPublic;
