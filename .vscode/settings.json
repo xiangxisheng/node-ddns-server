@@ -1,0 +1,9 @@
+{
+	"editor.tabSize": 1,
+	"editor.lineHeight": 13,
+	"editor.fontSize": 12,
+	"editor.fontFamily": "宋体",
+	"editor.mouseWheelZoom": true,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+}
