@@ -11,8 +11,14 @@ function fGetTimestamp() {
 }
 
 async function fGetNameByMacAddr(sMacAddr) {
-	if (sMacAddr === '46806cc657fd') {
-		return '8888';
+	if (sMacAddr === 'bc2411905555') {
+		return '1102';
+	}
+	if (sMacAddr === 'bc2411ff58fd') {
+		return '1103';
+	}
+	if (sMacAddr === 'bc2411b9f970') {
+		return '1523';
 	}
 	if (sMacAddr === 'bc241186f851') {
 		return '1551';
@@ -20,8 +26,8 @@ async function fGetNameByMacAddr(sMacAddr) {
 	if (sMacAddr === 'bc241186f87d') {
 		return '1552';
 	}
-	if (sMacAddr === 'bc2411905555') {
-		return '1102';
+	if (sMacAddr === '46806cc657fd') {
+		return '8888';
 	}
 }
 
@@ -63,7 +69,7 @@ const server = dgram.createSocket('udp6');
 // 监听 'message' 事件，当接收到消息时触发
 server.on('message', (msg, rinfo) => {
 	//console.log(new Date(), `接收到来自 [${rinfo.address}]:${rinfo.port} 的消息: ${msg}`);
-	const sMacAddr = msg.toString().replace(/\-/g, '').toLowerCase();
+	const sMacAddr = msg.toString().replace(/\-|\:/g, '').toLowerCase();
 	if (!mMacAddr[sMacAddr]) {
 		mMacAddr[sMacAddr] = {};
 	}
