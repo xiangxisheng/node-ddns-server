@@ -9,10 +9,75 @@
 #include <netdb.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <fcntl.h>
+#include <libgen.h>
 
 #define SERVER_ADDR "v6.fm20.cn"
 #define SERVER_PORT 1
 #define BUFFER_SIZE 1024
+
+const char *extract_filename(const char *path)
+{
+	const char *filename = strrchr(path, '/');
+	if (filename != NULL)
+	{
+		filename++; // 跳过斜杠字符
+		return filename;
+	}
+	return path;
+}
+
+int lock_pid_file(const char *program_name)
+{
+	char pid_file[256];
+	struct flock lock;
+
+	sprintf(pid_file, "/var/run/%s.pid", program_name);
+
+	// 尝试打开 PID 文件
+	int pid_fd = open(pid_file, O_CREAT | O_RDWR, 0666);
+	if (pid_fd == -1)
+	{
+		perror("open");
+		return -1;
+	}
+
+	// 尝试获取文件锁
+	lock.l_type = F_WRLCK; // 写锁
+	lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+
+	int ret = fcntl(pid_fd, F_SETLK, &lock);
+	if (ret == -1)
+	{
+		// 如果无法获得锁，则说明已有相同的进程在运行
+		printf("Another instance is already running.\n");
+		return -1;
+	}
+
+	FILE *f = fdopen(pid_fd, "w");
+	if (f == NULL)
+	{
+		perror("fdopen");
+		return -1;
+	}
+
+	// 将当前进程的进程 ID 写入到 PID 文件中
+	if (fprintf(f, "%d", getpid()) < 0)
+	{
+		perror("fprintf");
+		return -1;
+	}
+
+	// 关闭文件描述符并刷新文件流
+	if (fflush(f) != 0)
+	{
+		perror("fflush");
+		return -1;
+	}
+	return 0;
+}
 
 int is_ipv6_2000_prefix(const struct in6_addr *addr)
 {
@@ -146,8 +211,14 @@ int send_udp_to_domain(char *sDomain, char *msg)
 	return 0;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+	// 尝试创建 PID 文件
+	if (lock_pid_file(extract_filename(argv[0])) == -1)
+	{
+		// 创建 PID 文件失败，程序退出
+		exit(EXIT_FAILURE);
+	}
 	char *interface_name = getPublicIpv6InterfaceName();
 	printf("Interface Name : %s\n", interface_name);
 	char mac_str[18];
