@@ -17,6 +17,12 @@ async function fGetNameByMacAddr(sMacAddr) {
 	if (sMacAddr === 'bc2411ff58fd') {
 		return '1103';
 	}
+	if (sMacAddr === 'bc241123f51c') {
+		return '1121';
+	}
+	if (sMacAddr === 'bc2411976101') {
+		return '1151';
+	}
 	if (sMacAddr === 'bc2411b9f970') {
 		return '1523';
 	}

@@ -86,7 +86,11 @@ module.exports = async function (_options) {
 			return new Promise((fReqReslove, fReqReject) => {
 				const req = oPrivate.client.request(options);
 				req.on('error', (error) => {
-					console.log(new Date(), 'error', error);
+					console.log(new Date(), '[http2-req-on-error]', error);
+					if (error.code === 'ERR_HTTP2_STREAM_ERROR') {
+						console.info('Stream closed with error code NGHTTP2_STREAM_CLOSED');
+					}
+					fReqReject(error);
 				});
 				req.on('response', (headers) => {
 					const oResResult = {};
