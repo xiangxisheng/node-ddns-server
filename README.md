@@ -9,7 +9,7 @@ DDNS服务器采用UDP协议接收客户端的IP地址，然后提交到dnspod�
 然后直接打开node-ddns-server.bat即可启动服务
 
 
-### indows客户端安装脚本
+### Windows客户端安装脚本
 
 ```
 @ECHO OFF
