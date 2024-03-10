@@ -1,15 +1,15 @@
-#采用node.js编写DDNS服务端
+# 采用node.js编写DDNS服务端
 
 DDNS服务器采用UDP协议接收客户端的IP地址，然后提交到dnspod更新域名解析记录
 优点：原理简单、流量消耗低、性能强
 
 
-###在Windows下运行DDNS服务端
+### 在Windows下运行DDNS服务端
 配置环境变量DNSPOD_DOMAIN和DNSPOD_LOGIN_TOKEN
 然后直接打开node-ddns-server.bat即可启动服务
 
 
-###Windows客户端安装脚本
+### indows客户端安装脚本
 
 ```
 @ECHO OFF
@@ -20,5 +20,5 @@ schtasks /run /tn "v6.fm20.cn"
 PAUSE
 ```
 
-###Linux客户端
+### Linux客户端
 可使用tcc编译ddns-client-linux.c编译后加到crontab即可
