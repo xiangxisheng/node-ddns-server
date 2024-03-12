@@ -45,9 +45,7 @@ async function do_ddns_aaaa(apiDnspod, sMacAddr, sIpv6, isOnline) {
 		return;
 	}
 	if (isOnline) {
-		await apiDnspod.RecordUpsertTypeValue(process.env.DNSPOD_DOMAIN, `${sName}.v6`, 'AAAA', sIpv6, sMacAddr).catch((ex) => {
-			console.log(new Date(), '[do_ddns_aaaa]', ex);
-		});
+		await apiDnspod.RecordUpsertTypeValue(process.env.DNSPOD_DOMAIN, `${sName}.v6`, 'AAAA', sIpv6, sMacAddr);
 	}
 }
 
@@ -59,7 +57,17 @@ async function handleLoop() {
 			const mRow = mMacAddr[sMacAddr];
 			const isOnline = fGetTimestamp() - mRow.time < 1000 * 5;
 			if (mRow.online != isOnline) {
-				await do_ddns_aaaa(apiDnspod, sMacAddr, mRow.ipv6, isOnline);
+				while (1) {
+					try {
+						await do_ddns_aaaa(apiDnspod, sMacAddr, mRow.ipv6, isOnline);
+						// 没出错就结束循环
+						break;
+					} catch (ex) {
+						console.log(new Date(), '[do_ddns_aaaa]', ex);
+						// 出错后要延迟1秒
+						await delay(1000);
+					}
+				}
 				await delay(1000);
 				mRow.online = isOnline;
 			}

@@ -90,6 +90,9 @@ module.exports = async function (_options) {
 					if (error.code === 'ERR_HTTP2_STREAM_ERROR') {
 						console.info('Stream closed with error code NGHTTP2_STREAM_CLOSED');
 					}
+					if (error.code === 'ERR_HTTP2_INVALID_SESSION') {
+						console.info('The session has been destroyed');
+					}
 					fReqReject(error);
 				});
 				req.on('response', (headers) => {
