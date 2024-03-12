@@ -57,7 +57,7 @@ async function handleLoop() {
 			const mRow = mMacAddr[sMacAddr];
 			const isOnline = fGetTimestamp() - mRow.time < 1000 * 5;
 			if (mRow.online != isOnline) {
-				while (1) {
+				for (var i = 1; i <= 10; i++) {
 					try {
 						await do_ddns_aaaa(apiDnspod, sMacAddr, mRow.ipv6, isOnline);
 						// 没出错就结束循环
