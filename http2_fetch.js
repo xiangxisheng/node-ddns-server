@@ -72,7 +72,23 @@ module.exports = async function (_options) {
 				}
 			}
 			await oPrivate.http2_connect(sUrl, options_connect);
-		}
+		},
+		async request(options) {
+			for (var i = 1; i <= 10; i++) {
+				try {
+					return oPrivate.client.request(options);
+				} catch (err) {
+					if (err.code === 'ERR_HTTP2_INVALID_SESSION') {
+						console.info(err);
+						await oPrivate.init();
+						if (i <= 3) {
+							continue;
+						}
+					}
+					throw err;
+				}
+			}
+		},
 	};
 	const oPublic = {
 		async request(_options) {
@@ -83,8 +99,8 @@ module.exports = async function (_options) {
 				options[HTTP2_HEADER_METHOD] = 'POST';
 				options[HTTP2_HEADER_CONTENT_TYPE] = 'application/x-www-form-urlencoded';
 			}
-			return new Promise((fReqReslove, fReqReject) => {
-				const req = oPrivate.client.request(options);
+			return new Promise(async (fReqReslove, fReqReject) => {
+				const req = await oPrivate.request(options);
 				req.on('error', (error) => {
 					console.log(new Date(), '[http2-req-on-error]', error);
 					if (error.code === 'ERR_HTTP2_STREAM_ERROR') {
