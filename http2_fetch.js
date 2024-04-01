@@ -135,15 +135,17 @@ module.exports = async function (_options) {
 					};
 					fReqReslove(oResResult);
 				});
-				req.write(data);
+				if (data) {
+					req.write(data);
+				}
 				req.end();
 			});
 		},
 		async get(path) {
-			await oPublic.request({ path });
+			return await oPublic.request({ path });
 		},
 		async post(path, data) {
-			await oPublic.request({ path, data });
+			return await oPublic.request({ path, data });
 		},
 	}
 	await oPrivate.init();
